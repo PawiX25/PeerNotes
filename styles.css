@@ -1,0 +1,136 @@
+.sticky-note {
+    position: absolute;
+    width: 200px;
+    min-height: 200px;
+    height: auto;
+    max-height: 400px;
+    padding: 16px;
+    background: #fef08a;
+    border-radius: 2px;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
+    cursor: move;
+    transform: rotate(-1deg);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+}
+
+.sticky-note:hover {
+    transform: scale(1.02) rotate(-1deg);
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.2);
+}
+
+.sticky-note:nth-child(even) {
+    transform: rotate(1deg);
+    background: #fde68a;
+}
+
+.sticky-note:nth-child(3n) {
+    transform: rotate(-2deg);
+    background: #fcd34d;
+}
+
+.note-content {
+    width: 100%;
+    flex: 1;
+    min-height: 150px;
+    background: transparent;
+    border: none;
+    resize: none;
+    font-family: 'Comic Sans MS', cursive;
+    line-height: 1.5;
+    overflow-y: auto;
+    user-select: text;
+}
+
+.note-content:focus {
+    outline: none;
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    user-select: none;
+}
+
+.note-drag-handle {
+    cursor: move;
+    user-select: none;
+}
+
+.delete-note {
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+    user-select: none;
+}
+
+.delete-note:hover {
+    color: #ff4444;
+}
+
+.tool-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tool-button i {
+    font-size: 1rem;
+}
+
+.connection-area {
+    backdrop-filter: blur(8px);
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.connection-area.collapsed {
+    transform: translateX(calc(100% - 40px));
+}
+
+.connection-area .collapse-btn {
+    position: absolute;
+    left: -36px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-right: none;
+    padding: 8px;
+    border-radius: 8px 0 0 8px;
+    cursor: pointer;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 640px) {
+    .connection-area {
+        width: calc(100% - 32px);
+        margin: 16px;
+    }
+    
+    .tool-button span {
+        display: none;
+    }
+    
+    .tool-button {
+        padding: 8px;
+    }
+}

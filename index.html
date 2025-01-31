@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerNote - Collaborative Notes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-sticky-note text-yellow-400 text-2xl"></i>
+                    <h1 class="text-xl font-semibold text-gray-800">PeerNote</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="online-status" class="flex items-center">
+                        <span class="animate-pulse w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        <span class="text-sm text-gray-600">Connected</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="connection-area fixed top-20 right-4 bg-white p-6 rounded-xl shadow-lg z-50 w-80 border border-gray-200">
+        <div class="space-y-4">
+            <div class="flex flex-col">
+                <label class="text-sm text-gray-600 mb-1">Your ID</label>
+                <div class="flex">
+                    <input type="text" id="peer-id" readonly 
+                        class="flex-1 bg-gray-50 border border-gray-200 rounded-l px-3 py-2 text-sm">
+                    <button id="copy-id" class="bg-gray-50 border border-l-0 border-gray-200 px-3 rounded-r hover:bg-gray-100">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <label class="text-sm text-gray-600 mb-1">Connect to Peer</label>
+                <div class="flex">
+                    <input type="text" id="connect-to" placeholder="Enter peer ID" 
+                        class="flex-1 border border-gray-200 rounded-l px-3 py-2 text-sm">
+                    <button id="connect-btn" class="bg-blue-500 text-white px-4 rounded-r hover:bg-blue-600">
+                        <i class="fas fa-link"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="connection-status" class="text-sm text-gray-600"></div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-full shadow-lg px-6 py-3 flex items-center space-x-4">
+        <button id="add-note" class="tool-button bg-yellow-400 hover:bg-yellow-500">
+            <i class="fas fa-plus"></i>
+            <span>Add Note</span>
+        </button>
+        <div class="w-px h-6 bg-gray-200"></div>
+        <button id="clear-all" class="tool-button bg-red-50 hover:bg-red-100 text-red-600">
+            <i class="fas fa-trash-alt"></i>
+            <span>Clear All</span>
+        </button>
+        <div class="w-px h-6 bg-gray-200"></div>
+        <button id="arrange" class="tool-button bg-blue-50 hover:bg-blue-100 text-blue-600">
+            <i class="fas fa-th"></i>
+            <span>Arrange</span>
+        </button>
+    </div>
+
+    <div id="notes-container" class="min-h-screen p-8 pt-20"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
