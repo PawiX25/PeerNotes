@@ -215,11 +215,14 @@ function updateNote(noteData, broadcast = true) {
 function deleteNote(noteId, broadcast = true) {
     const note = document.getElementById(noteId);
     if (note) {
-        note.remove();
-        saveNotesToLocalStorage();
-        if (broadcast) {
-            broadcastEvent('deleteNote', { id: noteId });
-        }
+        note.classList.add('fade-out');
+        setTimeout(() => {
+            note.remove();
+            saveNotesToLocalStorage();
+            if (broadcast) {
+                broadcastEvent('deleteNote', { id: noteId });
+            }
+        }, 300);
     }
 }
 
