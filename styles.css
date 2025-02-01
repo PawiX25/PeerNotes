@@ -5,7 +5,6 @@
     height: auto;
     max-height: 400px;
     padding: 16px;
-    background: #fef08a;
     border-radius: 2px;
     box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
     cursor: move;
@@ -21,14 +20,19 @@
     box-shadow: 5px 5px 12px rgba(0,0,0,0.2);
 }
 
-.sticky-note:nth-child(even) {
-    transform: rotate(1deg);
-    background: #fde68a;
+.note-color-1 {
+    background: #fef08a;
+    transform: rotate(-1deg);
 }
 
-.sticky-note:nth-child(3n) {
-    transform: rotate(-2deg);
+.note-color-2 {
+    background: #fde68a;
+    transform: rotate(1deg);
+}
+
+.note-color-3 {
     background: #fcd34d;
+    transform: rotate(-2deg);
 }
 
 .note-content {

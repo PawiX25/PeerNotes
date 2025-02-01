@@ -27,7 +27,9 @@ function handleConnection(conn) {
                     position: {
                         x: parseInt(note.style.left),
                         y: parseInt(note.style.top)
-                    }
+                    },
+                    colorClass: Array.from(note.classList)
+                        .find(cls => cls.startsWith('note-color-'))
                 }
             });
         });
@@ -68,7 +70,12 @@ function handlePeerData(data) {
     
     switch(data.type) {
         case 'newNote':
-            if (data.note) createNote(data.note, false);
+            if (data.note) {
+                createNote({
+                    ...data.note,
+                    colorClass: data.note.colorClass
+                }, false);
+            }
             break;
         case 'updateNote':
             if (data.note) updateNote(data.note, false);
@@ -86,7 +93,8 @@ function createNote(noteData, broadcast = true) {
     if (!noteData) noteData = {};
     
     const note = document.createElement('div');
-    note.className = 'sticky-note fade-in';
+    const colorClass = noteData.colorClass || `note-color-${Math.floor(Math.random() * 3) + 1}`;
+    note.className = `sticky-note fade-in ${colorClass}`;
     note.id = noteData.id || 'note-' + Date.now();
     note.innerHTML = `
         <div class="note-header">
@@ -115,7 +123,8 @@ function createNote(noteData, broadcast = true) {
             position: { 
                 x: parseInt(note.style.left), 
                 y: parseInt(note.style.top) 
-            }
+            },
+            colorClass: colorClass
         });
     }
 
@@ -216,7 +225,13 @@ function moveNote(noteId, position, broadcast = true) {
         note.style.left = position.x + 'px';
         note.style.top = position.y + 'px';
         if (broadcast) {
-            broadcastEvent('moveNote', { id: noteId, position });
+            const colorClass = Array.from(note.classList)
+                .find(cls => cls.startsWith('note-color-'));
+            broadcastEvent('moveNote', { 
+                id: noteId, 
+                position,
+                colorClass 
+            });
         }
     }
 }
@@ -230,7 +245,8 @@ function broadcastEvent(type, data) {
                 note: {
                     id: data.id,
                     content: data.content || '',
-                    position: data.position
+                    position: data.position,
+                    colorClass: data.colorClass
                 }
             };
             break;
@@ -244,10 +260,14 @@ function broadcastEvent(type, data) {
             };
             break;
         case 'moveNote':
+            const note = document.getElementById(data.id);
+            const colorClass = note ? Array.from(note.classList)
+                .find(cls => cls.startsWith('note-color-')) : null;
             eventData = {
                 type,
                 id: data.id,
-                position: data.position
+                position: data.position,
+                colorClass: colorClass
             };
             break;
         default:
