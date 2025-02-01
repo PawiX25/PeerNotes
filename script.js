@@ -86,6 +86,9 @@ function handlePeerData(data) {
         case 'moveNote':
             if (data.id && data.position) moveNote(data.id, data.position, false);
             break;
+        case 'resizeNote':
+            if (data.id && data.size) resizeNote(data.id, data.size, false);
+            break;
     }
 }
 
@@ -102,6 +105,7 @@ function createNote(noteData, broadcast = true) {
             <button class="delete-note">×</button>
         </div>
         <textarea class="note-content">${noteData.content || ''}</textarea>
+        <div class="resize-handle"></div>
     `;
 
     if (noteData.position && typeof noteData.position.x === 'number' && typeof noteData.position.y === 'number') {
@@ -112,8 +116,14 @@ function createNote(noteData, broadcast = true) {
         note.style.top = (Math.random() * (window.innerHeight - 220)) + 'px';
     }
 
+    if (noteData.size) {
+        note.style.width = `${noteData.size.width}px`;
+        note.style.height = `${noteData.size.height}px`;
+    }
+
     document.getElementById('notes-container').appendChild(note);
     makeDraggable(note);
+    makeResizable(note);
     setupNoteListeners(note);
     saveNotesToLocalStorage();
 
@@ -176,6 +186,50 @@ function makeDraggable(note) {
             id: note.id,
             position: { x: parseInt(note.style.left), y: parseInt(note.style.top) }
         });
+    }
+}
+
+function makeResizable(note) {
+    const resizeHandle = note.querySelector('.resize-handle');
+    let startX, startY, startWidth, startHeight;
+
+    resizeHandle.addEventListener('mousedown', initResize);
+
+    function initResize(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        startX = e.clientX;
+        startY = e.clientY;
+        startWidth = note.offsetWidth;
+        startHeight = note.offsetHeight;
+        
+        note.classList.add('resizing');
+        document.addEventListener('mousemove', resize);
+        document.addEventListener('mouseup', stopResize);
+    }
+
+    function resize(e) {
+        const newWidth = startWidth + (e.clientX - startX);
+        const newHeight = startHeight + (e.clientY - startY);
+        
+        note.style.width = `${Math.max(200, newWidth)}px`;
+        note.style.height = `${Math.max(200, newHeight)}px`;
+    }
+
+    function stopResize() {
+        note.classList.remove('resizing');
+        document.removeEventListener('mousemove', resize);
+        document.removeEventListener('mouseup', stopResize);
+        
+        broadcastEvent('resizeNote', {
+            id: note.id,
+            size: {
+                width: note.offsetWidth,
+                height: note.offsetHeight
+            }
+        });
+        saveNotesToLocalStorage();
     }
 }
 
@@ -243,6 +297,17 @@ function moveNote(noteId, position, broadcast = true) {
     }
 }
 
+function resizeNote(noteId, size, broadcast = true) {
+    const note = document.getElementById(noteId);
+    if (note) {
+        note.style.width = `${size.width}px`;
+        note.style.height = `${size.height}px`;
+        if (broadcast) {
+            broadcastEvent('resizeNote', { id: noteId, size });
+        }
+    }
+}
+
 function broadcastEvent(type, data) {
     let eventData;
     switch(type) {
@@ -275,6 +340,13 @@ function broadcastEvent(type, data) {
                 id: data.id,
                 position: data.position,
                 colorClass: colorClass
+            };
+            break;
+        case 'resizeNote':
+            eventData = {
+                type,
+                id: data.id,
+                size: data.size
             };
             break;
         default:
@@ -401,6 +473,10 @@ function saveNotesToLocalStorage() {
         position: {
             x: parseInt(note.style.left),
             y: parseInt(note.style.top)
+        },
+        size: {
+            width: note.offsetWidth,
+            height: note.offsetHeight
         },
         colorClass: Array.from(note.classList).find(cls => cls.startsWith('note-color-'))
     }));

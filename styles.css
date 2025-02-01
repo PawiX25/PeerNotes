@@ -13,6 +13,7 @@
     display: flex;
     flex-direction: column;
     user-select: none;
+    overflow: visible;
 }
 
 .sticky-note:hover {
@@ -46,6 +47,8 @@
     line-height: 1.5;
     overflow-y: auto;
     user-select: text;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.2) transparent;
 }
 
 .note-content:focus {
@@ -225,4 +228,55 @@
 
 .modal-btn-secondary:hover {
     background: #e5e7eb;
+}
+
+.resize-handle {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 16px;
+    height: 16px;
+    cursor: se-resize;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.1);
+    border-radius: 0 0 2px 0;
+}
+
+.resize-handle::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid rgba(0,0,0,0.4);
+    border-bottom: 2px solid rgba(0,0,0,0.4);
+}
+
+.resize-handle:hover {
+    opacity: 1;
+    background: rgba(0,0,0,0.15);
+}
+
+.sticky-note.resizing {
+    transition: none;
+    user-select: none;
+}
+
+.note-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.note-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.note-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 3px;
+}
+
+.note-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0,0,0,0.3);
 }
