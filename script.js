@@ -28,6 +28,10 @@ function handleConnection(conn) {
                         x: parseInt(note.style.left),
                         y: parseInt(note.style.top)
                     },
+                    size: {
+                        width: note.offsetWidth,
+                        height: note.offsetHeight
+                    },
                     colorClass: Array.from(note.classList)
                         .find(cls => cls.startsWith('note-color-')),
                     zIndex: parseInt(note.style.zIndex) || 0
