@@ -29,7 +29,8 @@ function handleConnection(conn) {
                         y: parseInt(note.style.top)
                     },
                     colorClass: Array.from(note.classList)
-                        .find(cls => cls.startsWith('note-color-'))
+                        .find(cls => cls.startsWith('note-color-')),
+                    zIndex: parseInt(note.style.zIndex) || 0
                 }
             });
         });
@@ -89,6 +90,9 @@ function handlePeerData(data) {
         case 'resizeNote':
             if (data.id && data.size) resizeNote(data.id, data.size, false);
             break;
+        case 'updateZIndex':
+            if (data.id && data.zIndex) updateNoteZIndex(data.id, data.zIndex, false);
+            break;
     }
 }
 
@@ -121,6 +125,10 @@ function createNote(noteData, broadcast = true) {
         note.style.height = `${noteData.size.height}px`;
     }
 
+    if (noteData.zIndex) {
+        note.style.zIndex = noteData.zIndex;
+    }
+
     document.getElementById('notes-container').appendChild(note);
     makeDraggable(note);
     makeResizable(note);
@@ -135,7 +143,8 @@ function createNote(noteData, broadcast = true) {
                 x: parseInt(note.style.left), 
                 y: parseInt(note.style.top) 
             },
-            colorClass: colorClass
+            colorClass: colorClass,
+            zIndex: parseInt(note.style.zIndex) || 0
         });
     }
 
@@ -157,7 +166,13 @@ function makeDraggable(note) {
         pos4 = e.clientY;
         document.onmouseup = closeDragElement;
         document.onmousemove = elementDrag;
-        note.style.zIndex = getHighestZIndex() + 1;
+        
+        const newZIndex = getHighestZIndex() + 1;
+        note.style.zIndex = newZIndex;
+        broadcastEvent('updateZIndex', {
+            id: note.id,
+            zIndex: newZIndex
+        });
     }
 
     function elementDrag(e) {
@@ -308,6 +323,16 @@ function resizeNote(noteId, size, broadcast = true) {
     }
 }
 
+function updateNoteZIndex(noteId, zIndex, broadcast = true) {
+    const note = document.getElementById(noteId);
+    if (note) {
+        note.style.zIndex = zIndex;
+        if (broadcast) {
+            broadcastEvent('updateZIndex', { id: noteId, zIndex });
+        }
+    }
+}
+
 function broadcastEvent(type, data) {
     let eventData;
     switch(type) {
@@ -318,7 +343,8 @@ function broadcastEvent(type, data) {
                     id: data.id,
                     content: data.content || '',
                     position: data.position,
-                    colorClass: data.colorClass
+                    colorClass: data.colorClass,
+                    zIndex: data.zIndex
                 }
             };
             break;
@@ -347,6 +373,13 @@ function broadcastEvent(type, data) {
                 type,
                 id: data.id,
                 size: data.size
+            };
+            break;
+        case 'updateZIndex':
+            eventData = {
+                type,
+                id: data.id,
+                zIndex: data.zIndex
             };
             break;
         default:
@@ -478,7 +511,8 @@ function saveNotesToLocalStorage() {
             width: note.offsetWidth,
             height: note.offsetHeight
         },
-        colorClass: Array.from(note.classList).find(cls => cls.startsWith('note-color-'))
+        colorClass: Array.from(note.classList).find(cls => cls.startsWith('note-color-')),
+        zIndex: parseInt(note.style.zIndex) || 0
     }));
     localStorage.setItem('peerNotes', JSON.stringify(notes));
 }
