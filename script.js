@@ -322,9 +322,17 @@ function setupConnectionPanel() {
 
 function setupToolbar() {
     document.getElementById('clear-all').addEventListener('click', () => {
-        if (confirm('Are you sure you want to clear all notes?')) {
-            clearAllNotes();
-        }
+        const modal = document.getElementById('confirm-modal');
+        modal.classList.add('active');
+    });
+
+    document.getElementById('cancel-clear').addEventListener('click', () => {
+        document.getElementById('confirm-modal').classList.remove('active');
+    });
+
+    document.getElementById('confirm-clear').addEventListener('click', () => {
+        document.getElementById('confirm-modal').classList.remove('active');
+        clearAllNotes();
     });
 
     document.getElementById('arrange').addEventListener('click', arrangeNotes);

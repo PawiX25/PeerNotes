@@ -72,6 +72,17 @@
 
     <div id="notes-container" class="min-h-screen p-8 pt-20"></div>
 
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-xl font-semibold text-gray-900 mb-1">Clear all notes?</h3>
+            <p class="text-gray-600">This action cannot be undone. All notes will be permanently deleted.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" id="cancel-clear">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="confirm-clear">Delete All</button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
