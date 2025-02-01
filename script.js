@@ -115,6 +115,7 @@ function createNote(noteData, broadcast = true) {
     document.getElementById('notes-container').appendChild(note);
     makeDraggable(note);
     setupNoteListeners(note);
+    saveNotesToLocalStorage();
 
     if (broadcast) {
         broadcastEvent('newNote', {
@@ -187,6 +188,7 @@ function setupNoteListeners(note) {
             id: note.id,
             content: textarea.value
         });
+        saveNotesToLocalStorage();
     });
 
     deleteBtn.addEventListener('click', () => {
@@ -202,6 +204,7 @@ function updateNote(noteData, broadcast = true) {
         const textarea = note.querySelector('.note-content');
         if (textarea && noteData.content !== undefined) {
             textarea.value = noteData.content;
+            saveNotesToLocalStorage();
             if (broadcast) {
                 broadcastEvent('updateNote', noteData);
             }
@@ -213,6 +216,7 @@ function deleteNote(noteId, broadcast = true) {
     const note = document.getElementById(noteId);
     if (note) {
         note.remove();
+        saveNotesToLocalStorage();
         if (broadcast) {
             broadcastEvent('deleteNote', { id: noteId });
         }
@@ -379,9 +383,32 @@ function arrangeNotes() {
     });
 }
 
+function saveNotesToLocalStorage() {
+    const notes = Array.from(document.getElementsByClassName('sticky-note')).map(note => ({
+        id: note.id,
+        content: note.querySelector('.note-content').value,
+        position: {
+            x: parseInt(note.style.left),
+            y: parseInt(note.style.top)
+        },
+        colorClass: Array.from(note.classList).find(cls => cls.startsWith('note-color-'))
+    }));
+    localStorage.setItem('peerNotes', JSON.stringify(notes));
+}
+
+function loadNotesFromLocalStorage() {
+    const savedNotes = localStorage.getItem('peerNotes');
+    if (savedNotes) {
+        JSON.parse(savedNotes).forEach(noteData => {
+            createNote(noteData, false);
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initPeer();
     initializeUI();
+    loadNotesFromLocalStorage();
 
     document.getElementById('connect-btn').addEventListener('click', () => {
         const connectTo = document.getElementById('connect-to').value.trim();
